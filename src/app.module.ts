@@ -8,6 +8,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/entities/user.entity';
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
+import { ProductModule } from './product/product.module';
+import { ReviewModule } from './review/review.module';
+import { Product } from './product/entities/product.entity';
+import { Review } from './review/entities/review.entity';
+import { Cart } from './cart/entities/cart.entity';
 
 @Module({
 	imports: [TypeOrmModule.forRoot({
@@ -17,9 +22,9 @@ import { AuthModule } from './auth/auth.module';
 		username: 'root',
 		password: 'root',
 		database: 'ecommerce',
-		entities: [User],
+		entities: [User,Product,Review,Cart],
 		synchronize: true,
-	  }),CartModule, UserModule, WishlistModule, AuthModule],
+	  }),CartModule, UserModule, WishlistModule, AuthModule, ProductModule, ReviewModule],
 	controllers: [AppController],
 	providers: [AppService, AuthService],
 })

@@ -16,7 +16,7 @@ export class AuthService {
         const decodedPass = await bcrypt.compare(signInDto.password, user.password);
         if (!decodedPass)
             throw new UnauthorizedException();
-        const token = await this.jwtService.sign({ email: user.email });
+        const token = await this.jwtService.sign({ email: user.email,userId: user.userId });
         return token;
     }
 }
