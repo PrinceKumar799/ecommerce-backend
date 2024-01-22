@@ -1,5 +1,7 @@
+import { Exclude } from 'class-transformer';
 import { Cart } from 'src/cart/entities/cart.entity';
 import { Review } from 'src/review/entities/review.entity';
+import { Wishlist } from 'src/wishlist/entities/wishlist.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 
 @Entity()
@@ -23,9 +25,11 @@ export class Product {
     createdBy: string;
     
   @CreateDateColumn({ type: 'timestamp' })
+    @Exclude()
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamp' })
+    @Exclude()
     updatedAt: Date;
     
     @OneToMany(() => Review, review => review.product)
@@ -33,5 +37,8 @@ export class Product {
   
   @OneToMany(() => Cart, cart => cart.product)
   carts: Cart[];
+
+  @OneToMany(() => Wishlist, wishlist => wishlist.product)
+  wishlist: Wishlist[];
 
 }

@@ -13,6 +13,7 @@ import { ReviewModule } from './review/review.module';
 import { Product } from './product/entities/product.entity';
 import { Review } from './review/entities/review.entity';
 import { Cart } from './cart/entities/cart.entity';
+import { Wishlist } from './wishlist/entities/wishlist.entity';
 
 @Module({
 	imports: [TypeOrmModule.forRoot({
@@ -22,7 +23,7 @@ import { Cart } from './cart/entities/cart.entity';
 		username: 'root',
 		password: 'root',
 		database: 'ecommerce',
-		entities: [User,Product,Review,Cart],
+		entities: [User,Product,Review,Cart,Wishlist],
 		synchronize: true,
 	  }),CartModule, UserModule, WishlistModule, AuthModule, ProductModule, ReviewModule],
 	controllers: [AppController],

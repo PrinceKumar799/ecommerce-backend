@@ -6,19 +6,17 @@ import {
 	Patch,
 	Param,
 	Delete,
+	UseGuards,
+	Request,
 } from '@nestjs/common';
 import { WishlistService } from './wishlist.service';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('wishlist')
 export class WishlistController {
-	constructor(private readonly wishlistService: WishlistService) {}
-
-	@Post()
-	create(@Body() createWishlistDto: CreateWishlistDto) {
-		return this.wishlistService.create(createWishlistDto);
-	}
+	constructor(private readonly wishlistService: WishlistService) { }
 
 	@Get()
 	findAll() {
@@ -38,8 +36,9 @@ export class WishlistController {
 		return this.wishlistService.update(+id, updateWishlistDto);
 	}
 
-	@Delete(':id')
-	remove(@Param('id') id: string) {
-		return this.wishlistService.remove(+id);
+	@UseGuards(AuthGuard)
+	@Delete('removeProduct/:productId')
+	remove(@Param('productId') prodcutId: string,@Request() req) {
+		return this.wishlistService.remove(+prodcutId,req.user.userId);
 	}
 }

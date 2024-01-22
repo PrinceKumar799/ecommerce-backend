@@ -17,7 +17,7 @@ export class UserService {
 		try {
 			const hasedPass = await bcrypt.hash(createUserDto.password, 10);
 			createUserDto.password = hasedPass;
-			const user = this.usersRepository.create(createUserDto);
+			const user = this.usersRepository.create({...createUserDto });
 			//console.log("next");
 			const { password, ...res } = await this.usersRepository.save(user);
 			return res;
@@ -27,7 +27,7 @@ export class UserService {
 	}
 
 	async findAll() {
-		return await this.usersRepository.find();
+		return await this.usersRepository.find({ select: ['email','firstName','lastName'] });
 	}
 
 	async findOne(email: string) {
@@ -38,7 +38,7 @@ export class UserService {
 		const user = await this.usersRepository.findOne({ where: { email } });
 		if (!user)
 			throw new NotFoundException("User not found");
-    Object.assign(user, updateUserDto);
+		Object.assign(user, { ...updateUserDto });
     return await this.usersRepository.save(user);
 	}
 

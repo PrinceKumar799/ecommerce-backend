@@ -3,7 +3,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
-import { Repository } from 'typeorm';
+import { LessThanOrEqual, Like, MoreThanOrEqual, Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
@@ -25,8 +25,28 @@ export class ProductService {
     }
   }
 
-  async findAll() {
-    return await this.productRepository.find();
+  async findAll(page: number, limit: number, priceGreaterThan?: number,priceLessThan ?: number, name?: string) {
+    const filter: any = {} 
+    if (priceGreaterThan)
+    {
+      filter.price = MoreThanOrEqual(priceGreaterThan);
+    }
+    if (priceLessThan)
+    {
+      filter.price = LessThanOrEqual(priceLessThan);  
+    }
+
+    if (name)
+    {
+      filter.name = Like(`%${name}%`);
+    }
+    //console.log(filter);
+    const [data, total] = await this.productRepository.findAndCount({
+      where: { ...filter },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return {data, nextPage:page+1,limit};
   }
 
   async findOne(id: number) {
