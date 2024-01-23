@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,14 +15,19 @@ export class UserService {
 	  ) {}
 	async create(createUserDto: CreateUserDto) {
 		try {
+			const existingUser = await this.findOne(createUserDto.email);
+			console.log(existingUser);
+			if (existingUser)
+				throw new BadRequestException("User already exists");
 			const hasedPass = await bcrypt.hash(createUserDto.password, 10);
 			createUserDto.password = hasedPass;
 			const user = this.usersRepository.create({...createUserDto });
 			//console.log("next");
 			const { password, ...res } = await this.usersRepository.save(user);
 			return res;
-		} catch (error) {
-			throw new InternalServerErrorException();
+		} 
+		catch (error) {
+			throw error;
 		}
 	}
 
@@ -32,6 +37,11 @@ export class UserService {
 
 	async findOne(email: string) {
 		return await this.usersRepository.findOne({where:{email}});
+	}
+
+	async findOneById(userId: number)
+	{
+		return await this.usersRepository.findOne({ where: { userId } });
 	}
 
 	async update(email: string, updateUserDto: UpdateUserDto) {

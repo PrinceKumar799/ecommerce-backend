@@ -1,23 +1,28 @@
 // src/cart/cart.controller.ts
-import { Controller, Post, Get, Param, Body, Patch, Delete } from '@nestjs/common';
+import { Controller, Post, Get, Param, Body, Patch, Delete, Query, UseGuards, Request } from '@nestjs/common';
 import { CartService } from './cart.service';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { Product } from 'src/product/entities/product.entity';
 
 @Controller('carts')
 export class CartController {
 	constructor(private readonly cartService: CartService) { }
 
-  @Get(':userId')
-  async getCart(@Param('userId') userId: number) {
-    return this.cartService.findById(userId);
+  @UseGuards(AuthGuard)
+  @Patch('remove')
+  async removeItemFromCart(@Request() req, @Query('productId') productId: number) {
+    return this.cartService.removeItem(req.user.userId, productId);
   }
 
-  @Patch(':userId/remove/:itemId')
-  async removeItemFromCart(@Param('userId') userId: number, @Param('itemId') itemId: number) {
-    return this.cartService.removeItem(userId, itemId);
+  @UseGuards(AuthGuard)
+  @Delete('/clear')
+  async clearCart(@Request() req) {
+    return this.cartService.clearCart(req.user.userId);
   }
 
-  @Delete(':userId/clear')
-  async clearCart(@Param('userId') userId: string) {
-    return this.cartService.clearCart(+userId);
+  @UseGuards(AuthGuard)
+  @Get()
+  async getCart(@Request() req) {
+    return this.cartService.find(req.user.userId);
   }
 }

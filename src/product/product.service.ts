@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { LessThanOrEqual, Like, MoreThanOrEqual, Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
+import { error } from 'console';
 
 @Injectable()
 export class ProductService {
@@ -52,13 +53,14 @@ export class ProductService {
   async findOne(id: number) {
     try {
       const product = await this.productRepository.findOne({ where: { productId: id } })
+      console.log(product);
       if (!product)
         throw new NotFoundException("Resource not found");
       return product;
-    } catch (error) {
-      throw new InternalServerErrorException();
     }
-    
+    catch (error) {
+      throw error;
+    } 
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
@@ -69,7 +71,7 @@ export class ProductService {
       Object.assign(product, updateProductDto);
       return await this.productRepository.save(product);
     } catch (error) {
-      throw new InternalServerErrorException();
+      return error;
     }
   }
 
@@ -80,7 +82,7 @@ export class ProductService {
         throw new NotFoundException("Resource not found");
       return await this.productRepository.remove(product);
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw error;
     }
   }
 }

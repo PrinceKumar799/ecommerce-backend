@@ -29,15 +29,15 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @Get(':id')
-  findOne(@Param('id') email: string) {
+  findOne(@Param('id') email: string, @Request() req) {
+    if (req.user.email !== email)
+      throw new UnauthorizedException();
   	return this.userService.findOne(email);
   }
 
   @UseGuards(AuthGuard)
   @Patch(':id')
   update(@Param('id') email: string, @Body() updateUserDto: UpdateUserDto, @Request() req) {
-    
-    console.log("req.user.email, email");
     if (req.user.email !== email)
       throw new UnauthorizedException();
   	return this.userService.update(email, updateUserDto);

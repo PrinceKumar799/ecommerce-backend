@@ -26,7 +26,6 @@ export class ProductController {
     private readonly productService: ProductService,
     private readonly reviewService: ReviewService,
     private readonly cartService: CartService,
-    private readonly wishlistService: WishlistService,
   ) {}
 
   @UseGuards(AuthGuard)
@@ -81,13 +80,6 @@ export class ProductController {
       +productId,
       +bodyObj.quantity
     );
-  }
-
-  @UseGuards(AuthGuard)
-  @Post(":productId/addToWishlist")
-  addToWishlist(@Param("productId") productId: string, @Request() req) {
-    console.log("route confirmed");
-    return this.wishlistService.create(+productId,req.user.userId,);
   }
 
   @UseGuards(AuthGuard)

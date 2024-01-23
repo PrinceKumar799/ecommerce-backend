@@ -21,9 +21,9 @@ import { WishlistService } from 'src/wishlist/wishlist.service';
   exports:[UserService]
  */
 @Module({
-  imports:[TypeOrmModule.forFeature([Product,Review,Cart,Wishlist]),CartModule,WishlistModule],
+  imports:[TypeOrmModule.forFeature([Product,Review,Cart,Wishlist]),CartModule],
   controllers: [ProductController],
-  providers: [ProductService,ReviewService,CartService,WishlistService],
+  providers: [ProductService,ReviewService,CartService],
   exports:[ProductService]
 })
 export class ProductModule {}
