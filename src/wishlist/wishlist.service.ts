@@ -12,23 +12,20 @@ import { UserService } from 'src/user/user.service';
 export class WishlistService {
 	constructor(
 		@InjectRepository(Wishlist)
-		private readonly wishlistRepository: Repository<Wishlist>) {//, private readonly productService: ProductService, private readonly userService: UserService
+		private readonly wishlistRepository: Repository<Wishlist>,private readonly productService: ProductService, private readonly userService: UserService) {//, 
 		}
 	async create(productId: number, userId: number) {
 		try {
+			console.log(userId,productId);
 			const wishListProduct = await this.wishlistRepository.findOne({ where: { user: { userId }, product: { productId } } });
-
 			if (wishListProduct)
 				throw new ConflictException("Product already exists in wishlist");
-			// else {
-			// const productExists = await this.productService.findOne(productId);
-			// 	if (!productExists)
-			// 		throw new BadRequestException();
-			// 	const userExists = await this.userService.findOneById(userId);
-			// 	if (!userExists)
-			// 		throw new BadRequestException();
-			// }
-			console.log(wishListProduct);
+			const productExists = await this.productService.findOne(productId);
+				if (productExists)
+				{
+					throw new BadRequestException("No Such Product exists");
+				}
+			console.log(productExists);
 			const wishItem = await this.wishlistRepository.create({ user: { userId }, product: { productId }, updatedAt: Date() });
 
 			return await this.wishlistRepository.save(wishItem);

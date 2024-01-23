@@ -7,16 +7,17 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
     constructor(private readonly userService: UserService,private readonly jwtService: JwtService) { }
-    async singIn(@Body() signInDto: SignInDto)
+    async singIn(signInDto: SignInDto)
     {
-        const user = await this.userService.findOne(signInDto.email);
+        const user = await this.userService.findOne(signInDto.email,true);
         console.log(user);
         if (!user)
             throw new NotFoundException("User does not exists");
+        console.log("hererrrr", signInDto.password, user.password);
         const decodedPass = await bcrypt.compare(signInDto.password, user.password);
         if (!decodedPass)
             throw new UnauthorizedException();
         const token = await this.jwtService.sign({ email: user.email,userId: user.userId });
-        return token;
-    }
+        return { token };
+    } 
 }

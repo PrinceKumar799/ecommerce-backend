@@ -12,6 +12,7 @@ import { CartModule } from 'src/cart/cart.module';
 import { WishlistModule } from 'src/wishlist/wishlist.module';
 import { Wishlist } from 'src/wishlist/entities/wishlist.entity';
 import { WishlistService } from 'src/wishlist/wishlist.service';
+import { ReviewModule } from 'src/review/review.module';
 // import { Cart } from 'src/cart/entities/cart.entity';
 
 /**
@@ -21,7 +22,7 @@ import { WishlistService } from 'src/wishlist/wishlist.service';
   exports:[UserService]
  */
 @Module({
-  imports:[TypeOrmModule.forFeature([Product,Review,Cart,Wishlist]),CartModule],
+  imports:[TypeOrmModule.forFeature([Product,Review,Cart,Wishlist]),CartModule,ReviewModule],
   controllers: [ProductController],
   providers: [ProductService,ReviewService,CartService],
   exports:[ProductService]

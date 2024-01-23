@@ -8,12 +8,13 @@ import { ProductModule } from 'src/product/product.module';
 import { Product } from 'src/product/entities/product.entity';
 import { ProductService } from 'src/product/product.service';
 import { UserService } from 'src/user/user.service';
+import { User } from 'src/user/entities/user.entity';
 
 @Module({
 	//,UserModule,ProductModule
-	imports:[TypeOrmModule.forFeature([Wishlist])],
+	imports:[TypeOrmModule.forFeature([Wishlist,User,Product]),UserModule,ProductModule],
 	controllers: [WishlistController],
-	providers: [WishlistService],//,UserService,ProductService
+	providers: [WishlistService,UserService,ProductService],//ProductService
 	exports:[WishlistService],
 })
 export class WishlistModule {}

@@ -35,13 +35,17 @@ export class UserService {
 		return await this.usersRepository.find({ select: ['email','firstName','lastName'] });
 	}
 
-	async findOne(email: string) {
-		return await this.usersRepository.findOne({where:{email}});
+	async findOne(email: string,neePass:boolean=false) {
+		const user = await this.usersRepository.findOne({ where: { email } });
+		//if (neePass)
+			return user;
+		// const { password, ...res } = user;
+		// return res;
 	}
 
 	async findOneById(userId: number)
 	{
-		return await this.usersRepository.findOne({ where: { userId } });
+		return await this.usersRepository.findOne({ where: { userId },select: ['email','firstName','lastName'] });
 	}
 
 	async update(email: string, updateUserDto: UpdateUserDto) {
@@ -49,7 +53,8 @@ export class UserService {
 		if (!user)
 			throw new NotFoundException("User not found");
 		Object.assign(user, { ...updateUserDto });
-    return await this.usersRepository.save(user);
+		const { password,userId, ...res } = await this.usersRepository.save(user);
+		return res;
 	}
 
 	async remove(email: string) {

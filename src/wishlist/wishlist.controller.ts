@@ -14,8 +14,10 @@ import { WishlistService } from './wishlist.service';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('wishlist')
+@ApiTags('Wishlists')
 export class WishlistController {
 	constructor(private readonly wishlistService: WishlistService) { }
 
@@ -41,13 +43,14 @@ export class WishlistController {
 
 	@UseGuards(AuthGuard)
   @Post("")
-  addToWishlist(@Body() body, @Request() req) {
-    //console.log("route confirmed");
-    return this.wishlistService.create(body.prodcutId,req.user.userId,);
+  addToWishlist(@Body() createWishlistDto: CreateWishlistDto, @Request() req) {
+		//console.log("route confirmed");
+    return this.wishlistService.create(createWishlistDto.productId,req.user.userId,);
   }
 	@UseGuards(AuthGuard)
-	@Delete('removeProduct/:productId')
+	@Delete('removeProduct/:productId') 
 	remove(@Param('productId') prodcutId: string,@Request() req) {
 		return this.wishlistService.remove(+prodcutId,req.user.userId);
 	}
 }
+
