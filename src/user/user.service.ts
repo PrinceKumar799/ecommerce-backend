@@ -6,9 +6,10 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { NotFoundError } from 'rxjs';
+import { Server } from 'src/server/server.interface';
 
 @Injectable()
-export class UserService {
+export class UserService implements Server {
 	constructor(
 		@InjectRepository(User)
 		private readonly usersRepository: Repository<User>,
