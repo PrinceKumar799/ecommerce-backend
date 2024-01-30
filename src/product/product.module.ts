@@ -13,6 +13,7 @@ import { WishlistModule } from 'src/wishlist/wishlist.module';
 import { Wishlist } from 'src/wishlist/entities/wishlist.entity';
 import { WishlistService } from 'src/wishlist/wishlist.service';
 import { ReviewModule } from 'src/review/review.module';
+import { CacheModule } from '@nestjs/cache-manager';
 // import { Cart } from 'src/cart/entities/cart.entity';
 
 /**

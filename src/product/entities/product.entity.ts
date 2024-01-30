@@ -15,14 +15,23 @@ export class Product {
   @Column('text', { nullable: true })
   description: string;
 
+  @Column('text', { nullable: true })
+  category: string;
+
   @Column('decimal', { precision: 10, scale: 2 })
   price: number;
 
   @Column('int')
   stockQuantity: number;
 
+  @Column('text')
+  image: string;
+
   @Column({ nullable: true })
-    createdBy: string;
+  createdBy: string;
+
+  @Column('int')
+  ratings: number;
     
   @CreateDateColumn({ type: 'timestamp' })
     @Exclude()
@@ -37,7 +46,7 @@ export class Product {
   
   @OneToMany(() => Cart, cart => cart.product)
   carts: Cart[];
-
+ 
   @OneToMany(() => Wishlist, wishlist => wishlist.product)
   wishlist: Wishlist[];
 

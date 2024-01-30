@@ -1,61 +1,81 @@
 // src/cart/cart.service.ts
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Cart } from './entities/cart.entity';
-import { CreateCartDto } from './dto/create-cart.dto';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { Cart } from "./entities/cart.entity";
+import { CreateCartDto } from "./dto/create-cart.dto";
 
 @Injectable()
 export class CartService {
   constructor(
     @InjectRepository(Cart)
-    private readonly cartRepository: Repository<Cart>,
+    private readonly cartRepository: Repository<Cart>
   ) {}
 
   async find(userId: number) {
-    const cart = await this.cartRepository.find( {where:{user:{userId}}});
-    // if (!cart) {
-    //   throw new NotFoundException('Cart not found');
-    // }
-    return cart;
+    const cart = await this.cartRepository.find({
+      where: { user: { userId } },
+      relations: ["product"],
+    });
+    const res = cart.map((cartItem) => {
+      return {
+        cartItemId:cartItem.cartItemId,
+        quantity: cartItem.quantity,
+        productName: cartItem.product.name,
+        price: cartItem.product.price,
+        image: cartItem.product.image,
+        rating: cartItem.product.ratings,
+        productId: cartItem.product.productId,
+      };
+    });
+    return res;
   }
 
-  async addItem(userId:number,productId:number,quantity:number): Promise<Cart> {
-    let cartItem = await this.cartRepository.findOne({ where: { user: { userId }, product: { productId } } });
-    if (cartItem)
-    {
+  async addItem(
+    userId: number,
+    quantity: number,
+    productId: number
+  ): Promise<Cart> {
+    let cartItem = await this.cartRepository.findOne({
+      where: { user: { userId }, product: { productId } },
+    });
+    if (cartItem) {
       cartItem.quantity += quantity;
-    }
-    else {
+    } else {
       cartItem = this.cartRepository.create({
-        user: {userId },
-        product: {productId },
+        user: { userId },
+        product: { productId },
         quantity,
       });
     }
     return await this.cartRepository.save(cartItem);
   }
 
-	
   async removeItem(userId: number, productId: number) {
     if (!productId)
       throw new BadRequestException("Please provide productId in the query");
-	  const cart = await this.cartRepository.findOne({ where: { user: { userId }, product: { productId } } });
-	  if (!cart)
-		  throw new NotFoundException();
+    const cart = await this.cartRepository.findOne({
+      where: { user: { userId }, product: { productId } },
+    });
+    if (!cart) throw new NotFoundException();
 
-    	return await this.cartRepository.remove(cart);
-  }        
+    return await this.cartRepository.remove(cart);
+  }
 
   async clearCart(userId: number) {
-    const cart = await this.cartRepository.find({ where: { user: { userId }} });
-	  if (!cart || cart.length === 0) {
-      throw new NotFoundException('Cart not found');
+    const cart = await this.cartRepository.find({
+      where: { user: { userId } },
+    });
+    if (!cart || cart.length === 0) {
+      throw new NotFoundException("Cart not found");
     }
-  
+
     const removedItems = await this.cartRepository.remove(cart);
-  
+
     return removedItems;
   }
-	
 }

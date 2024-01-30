@@ -13,7 +13,6 @@ export class AuthService {
         console.log(user);
         if (!user)
             throw new NotFoundException("User does not exists");
-        console.log("hererrrr", signInDto.password, user.password);
         const decodedPass = await bcrypt.compare(signInDto.password, user.password);
         if (!decodedPass)
             throw new UnauthorizedException();

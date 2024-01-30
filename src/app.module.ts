@@ -16,6 +16,9 @@ import { Cart } from "./cart/entities/cart.entity";
 import { Wishlist } from "./wishlist/entities/wishlist.entity";
 import { ServerModule } from "./server/server.module";
 //import { ServerModule } from "./server/server.module";
+import { CacheModule, CacheStore } from "@nestjs/cache-manager";
+import { RedisClientOptions } from "redis";
+import * as redisStore  from "cache-manager-redis-store";
 
 @Module({
   imports: [
@@ -29,18 +32,22 @@ import { ServerModule } from "./server/server.module";
       entities: [User, Product, Review, Cart, Wishlist],
       synchronize: true,
     }),
-    CartModule,
+    CacheModule.register({ 
+      isGlobal: true,
+      ttl:10,
+      store: redisStore,
+      url: "redis://localhost:6379",
+    }),
+    CartModule, 
     UserModule,
     WishlistModule,
     AuthModule,
     ProductModule,
-		ReviewModule,
-	ServerModule,
+    ReviewModule,
+    ServerModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    AuthService,
-	],
+  providers: [AppService, AuthService],
+  exports:[CacheModule]
 })
 export class AppModule {}

@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,13 +6,16 @@ import { Product } from './entities/product.entity';
 import { LessThanOrEqual, Like, MoreThanOrEqual, Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { error } from 'console';
+import { Cache } from 'cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
 export class ProductService {
 
   constructor(
 		@InjectRepository(Product)
-		private readonly productRepository: Repository<Product>,
+    private readonly productRepository: Repository<Product>,
+    @Inject(CACHE_MANAGER)private readonly cacheManager: Cache
   ) { }
   
   async create(createProductDto: CreateProductDto,createdBy: string) {
@@ -26,27 +29,30 @@ export class ProductService {
     }
   }
 
-  async findAll(page: number, limit: number, priceGreaterThan?: number,priceLessThan ?: number, name?: string) {
-    const filter: any = {} 
-    if (priceGreaterThan)
-    {
+  async findAll(page: number, limit: number, priceGreaterThan?: number, priceLessThan?: number, name?: string) {
+    const filter: any = {}
+    if (priceGreaterThan) {
       filter.price = MoreThanOrEqual(priceGreaterThan);
     }
-    if (priceLessThan)
-    {
-      filter.price = LessThanOrEqual(priceLessThan);  
+    if (priceLessThan) {
+      filter.price = LessThanOrEqual(priceLessThan);
     }
 
-    if (name)
-    {
+    if (name) {
       filter.name = Like(`%${name}%`);
     }
-    //console.log(filter);
+    // console.log(filter);
+    // const cachedProducts = await this.cacheManager.get('Products');
+    // if (cachedProducts)
+    //   return cachedProducts;
     const [data, total] = await this.productRepository.findAndCount({
+      select:['productId','price','ratings','description','stockQuantity','name','category','image'],
       where: { ...filter },
-      skip: (page - 1) * limit,
+      skip: (page - 1) * limit, 
       take: limit,
     });
+    // await this.cacheManager.set('Products', { source: "Cache" });
+    console.log("Cache Miss");
     return {data, nextPage:page+1,limit};
   }
 

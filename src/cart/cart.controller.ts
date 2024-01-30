@@ -11,6 +11,20 @@ export class CartController {
 	constructor(private readonly cartService: CartService) { }
 
   @UseGuards(AuthGuard)
+  @Post("/addToCart")
+  addToCart(
+    @Request() req,
+    @Body() bodyObj: { productId: string }
+  ) {
+    console.log(bodyObj);
+    return this.cartService.addItem(
+      req.user.userId,
+      1,
+      +bodyObj.productId,
+    );
+  }
+
+  @UseGuards(AuthGuard)
   @Patch('remove')
   @ApiOperation({ summary: 'Add product by product Id' })
   @ApiResponse({ status: 200, description: 'Product added into cart sucessfully' })
