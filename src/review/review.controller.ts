@@ -14,7 +14,18 @@ export class ReviewController {
 //   findAll() {
 //     return this.reviewService.findAll();
 //   }
-
+@UseGuards(AuthGuard)
+@Post()
+addReview(
+  @Body() createReviewDto: CreateReviewDto,
+  @Request() req
+) {
+  console.log('Add reviews controller')
+  return this.reviewService.create(
+    createReviewDto,
+    req.user.userId,
+  );
+}
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.reviewService.findOne(+id);

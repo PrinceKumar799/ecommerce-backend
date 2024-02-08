@@ -50,22 +50,10 @@ export class ProductController {
   @ApiConflictResponse({ description: "Product already exists" })
   @ApiInternalServerErrorResponse({ description: "Internal Server Error" })
   create(@Body() createProductDto: CreateProductDto, @Request() req) {
+    console.log(req.user);
     return this.productService.create(createProductDto, req.user.userId);
   }
-
-  @UseGuards(AuthGuard)
-  @Post(":productId/addReview")
-  addReview(
-    @Param("productId") productId: string,
-    @Body() createReviewDto: CreateReviewDto,
-    @Request() req
-  ) {
-    return this.reviewService.create(
-      createReviewDto,
-      req.product.productId,
-      +productId
-    );
-  }
+  
 
   @UseGuards(AuthGuard)
   @Post("updateReview/:reviewId")
@@ -94,6 +82,18 @@ export class ProductController {
     return this.reviewService.remove(+reviewId);
   }
 
+  @Get('user')
+  @UseGuards(AuthGuard)
+  findAllByUser(@Request() req)
+  {
+    console.log(req.user);
+    return this.productService.findAllByUser(
+      req.user.userId,
+    );
+  }
+    
+    
+    
   @Get()
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(3)
@@ -145,19 +145,20 @@ export class ProductController {
     return this.productService.findAll(
       +p,
       +l,
-      priceGreaterThan,
-      priceLessThan,
+      priceGreaterThan, 
+      priceLessThan, 
       name
     );
   }
 
-  @Get(":id")
+  @Get(":productId")
   @ApiOperation({ summary: "Get product by id" })
   @ApiResponse({
     status: 200,
     description: "product details retrieved successfully",
   })
-  findOne(@Param("id") id: string) {
+  findOne(@Param("productId") id: string) {
+    console.log("productId",id);
     return this.productService.findOne(+id);
   }
 

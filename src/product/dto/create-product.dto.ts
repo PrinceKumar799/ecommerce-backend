@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { PrimaryGeneratedColumn } from "typeorm";
 
 export class CreateProductDto {
   @ApiProperty({
@@ -8,7 +9,16 @@ export class CreateProductDto {
     })
     @IsString()
     @IsNotEmpty()
-    name: string;
+  name: string;
+  
+  @IsString()
+    @IsNotEmpty()
+  category: string;
+
+  @IsString()
+    @IsNotEmpty()
+  image: string;
+
     
     @ApiProperty({
       description: "Product Description",

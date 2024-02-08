@@ -72,16 +72,16 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
-  @Get(":email")
+  @Get("userDetails")
   @ApiOperation({ summary: "Get user by email" })
   @ApiResponse({
     status: 200,
     description: "User details retrieved successfully",
   })
   @ApiUnauthorizedResponse({ description: "Unauthorized" })
-  findOne(@Param("email") email: string, @Request() req) {
-    if (req.user.email !== email) throw new UnauthorizedException();
-    return this.server.findOne(email);
+  findOne( @Request() req) {
+   // if (req.user.userId !== +userId) throw new UnauthorizedException();
+    return this.userService.findOneById(+req.user.userId);
   }
 
   @UseGuards(AuthGuard)

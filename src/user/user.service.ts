@@ -36,7 +36,7 @@ export class UserService implements Server {
 		return await this.usersRepository.find({ select: ['email','firstName','lastName'] });
 	}
 
-	async findOne(email: string,neePass:boolean=false) {
+	async findOne(email: string) {
 		const user = await this.usersRepository.findOne({ where: { email } });
 		//if (neePass)
 			return user;

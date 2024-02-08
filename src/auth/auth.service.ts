@@ -9,8 +9,8 @@ export class AuthService {
     constructor(private readonly userService: UserService,private readonly jwtService: JwtService) { }
     async singIn(signInDto: SignInDto)
     {
-        const user = await this.userService.findOne(signInDto.email,true);
-        console.log(user);
+        const user = await this.userService.findOne(signInDto.email);
+        console.log("user service",user);
         if (!user)
             throw new NotFoundException("User does not exists");
         const decodedPass = await bcrypt.compare(signInDto.password, user.password);

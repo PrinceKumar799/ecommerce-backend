@@ -15,7 +15,10 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
+    console.log("Authorization pending...");
+    
     if (!token) {
+      console.log("No token")
       throw new UnauthorizedException();
     }
     try {
@@ -28,6 +31,8 @@ export class AuthGuard implements CanActivate {
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
       request['user'] = payload;
+      console.log("Authorization done");
+      
     } catch {
       throw new UnauthorizedException();
     }

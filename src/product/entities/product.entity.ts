@@ -30,7 +30,7 @@ export class Product {
   @Column({ nullable: true })
   createdBy: string;
 
-  @Column('int')
+  @Column({ nullable: true,type:'int' })
   ratings: number;
     
   @CreateDateColumn({ type: 'timestamp' })

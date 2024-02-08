@@ -11,6 +11,18 @@ export class CartController {
 	constructor(private readonly cartService: CartService) { }
 
   @UseGuards(AuthGuard)
+  @Patch("/removeOne")
+  removeOneItemFromCart(
+    @Request() req,
+    @Body() bodyObj: { productId: string }
+  ) {
+    console.log(bodyObj);
+    return this.cartService.removeOne(
+      req.user.userId,
+      +bodyObj.productId,
+    );
+  }
+  @UseGuards(AuthGuard)
   @Post("/addToCart")
   addToCart(
     @Request() req,

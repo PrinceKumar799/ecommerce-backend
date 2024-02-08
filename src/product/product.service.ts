@@ -20,6 +20,7 @@ export class ProductService {
   
   async create(createProductDto: CreateProductDto,createdBy: string) {
     try {
+      console.log("here");
       const product = this.productRepository.create({ ...createProductDto, createdAt: Date(), updatedAt: Date(), createdBy });
       console.log(product)
       const res = await this.productRepository.save(product);
@@ -48,7 +49,7 @@ export class ProductService {
     const [data, total] = await this.productRepository.findAndCount({
       select:['productId','price','ratings','description','stockQuantity','name','category','image'],
       where: { ...filter },
-      skip: (page - 1) * limit, 
+      skip: (page - 1) * limit,
       take: limit,
     });
     // await this.cacheManager.set('Products', { source: "Cache" });
@@ -58,15 +59,46 @@ export class ProductService {
 
   async findOne(id: number) {
     try {
-      const product = await this.productRepository.findOne({ where: { productId: id } })
-      console.log(product);
-      if (!product)
+      const productWithReview = await this.productRepository
+        .createQueryBuilder('product')
+        .leftJoinAndSelect('product.review', 'review')
+        .leftJoinAndSelect('review.user', 'user')
+        .where('product.productId = :id', { id })
+        .select([
+          'product.name',
+          'product.category',
+          'product.ratings',
+          'product.price',
+          'product.image',
+          'product.description',
+          'product.stockQuantity',
+          'review.reviewId',
+          'review.content', // Alias to prevent naming conflict
+          'user.userId',
+          'user.firstName',
+          'user.lastName'
+        ])
+        .getOne();
+
+      if (!productWithReview)
         throw new NotFoundException("Resource not found");
-      return product;
-    }
-    catch (error) {
+
+      return productWithReview; 
+    } catch (error) {
       throw error;
-    } 
+    }
+  }
+
+ async findAllByUser(userId: number)
+ {
+   console.log("userId:" ,userId);
+    const data = await this.productRepository.find({
+      select:['productId','price','ratings','description','stockQuantity','name','category','image'],
+      where: {createdBy:String(userId)},
+    });
+    // await this.cacheManager.set('Products', { source: "Cache" });
+    console.log(data);
+    return data;
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
@@ -92,3 +124,4 @@ export class ProductService {
     }
   }
 }
+

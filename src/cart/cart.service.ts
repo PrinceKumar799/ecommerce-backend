@@ -35,6 +35,23 @@ export class CartService {
     return res;
   }
 
+  async removeOne(
+    userId: number,
+    productId: number
+  ): Promise<Cart> {
+    let cartItem = await this.cartRepository.findOne({
+      where: { user: { userId }, product: { productId } },
+    });
+    if (cartItem) {
+      //cartItem.quantity -= 1;
+      if (cartItem.quantity == 1)
+        return await this.removeItem(userId, productId);
+    } else {
+      throw  new NotFoundException();
+    }
+    return await this.cartRepository.save(cartItem);
+  }
+
   async addItem(
     userId: number,
     quantity: number,
@@ -78,4 +95,5 @@ export class CartService {
 
     return removedItems;
   }
+
 }

@@ -21,13 +21,15 @@ export class WishlistService {
 			if (wishListProduct)
 				throw new ConflictException("Product already exists in wishlist");
 			const productExists = await this.productService.findOne(productId);
-				if (productExists)
+			//console.log("herr");
+				if (!productExists)
 				{
+					//console.log(productExists);
 					throw new BadRequestException("No Such Product exists");
-				}
-			console.log(productExists);
+				} 
+			//console.log(productExists);
 			const wishItem = await this.wishlistRepository.create({ user: { userId }, product: { productId }, updatedAt: Date() });
-
+			console.log("wishlist",wishItem);
 			return await this.wishlistRepository.save(wishItem);
 		}
 		catch (err)
@@ -41,15 +43,17 @@ export class WishlistService {
 	}
 
 	async findByUser(userId: number) {
-		return await this.wishlistRepository.findOne({ where: { user: { userId } } }) ;
+		return await this.wishlistRepository.find({ where: { user: { userId } } ,relations:['product']}) ;
 	}
 
 	// update(id: number, updateWishlistDto: UpdateWishlistDto) {
 	// 	return `This action updates a #${id} wishlist`;
 	// }
 
-	async remove(productId: number,userId: number) {
-		const wishlistItem = await this.wishlistRepository.find({where:{user:{userId},product:{productId}}})
+	async remove(productId: number, userId: number) {
+		//console.log(productId, userId);
+		const wishlistItem = await this.wishlistRepository.find({ where: { user: { userId }, product: { productId } } })
+		//console.log(wishlistItem);
 		return await this.wishlistRepository.remove(wishlistItem);
 	}
 }
