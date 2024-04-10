@@ -7,14 +7,15 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Cart } from "./entities/cart.entity";
-import { CreateCartDto } from "./dto/create-cart.dto";
-
+import Stripe from "stripe";
 @Injectable()
 export class CartService {
+  private readonly stripe: Stripe;
   constructor(
     @InjectRepository(Cart)
     private readonly cartRepository: Repository<Cart>
-  ) {}
+  ) {
+  }
 
   async find(userId: number) {
     const cart = await this.cartRepository.find({
@@ -96,4 +97,12 @@ export class CartService {
     return removedItems;
   }
 
-}
+  async createPaymentIntent(amount: number = 0, currency: string="INR"): Promise<Stripe.PaymentIntent> {
+    const paymentIntent = await this.stripe.paymentIntents.create({
+      amount,
+      currency,
+    });
+    return paymentIntent;
+  }
+
+} 

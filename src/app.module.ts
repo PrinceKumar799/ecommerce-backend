@@ -18,27 +18,31 @@ import { ServerModule } from "./server/server.module";
 //import { ServerModule } from "./server/server.module";
 import { CacheModule, CacheStore } from "@nestjs/cache-manager";
 import { RedisClientOptions } from "redis";
-import * as redisStore  from "cache-manager-redis-store";
+import * as redisStore from "cache-manager-redis-store";
+import { ConfigModule } from "@nestjs/config";
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     TypeOrmModule.forRoot({
       type: "mysql",
-      host: "localhost",
-      port: 3306,
-      username: "root",
-      password: "root",
-      database: "ecommerce",
+      host: process.env.DB_HOSTNAME,
+      port: parseInt(process.env.DB_PORT),
+      username: process.env.DB_USENAME,
+      password: process.env.DB_PASS,
+      database: process.env.DB_NAME,
       entities: [User, Product, Review, Cart, Wishlist],
       synchronize: true,
     }),
     CacheModule.register({ 
       isGlobal: true,
-      ttl:10,
+      ttl:100,
       store: redisStore,
-      url: "redis://localhost:6379",
+      url: process.env.REDIS_URL,
     }),
-    CartModule, 
+    CartModule,  
     UserModule,
     WishlistModule,
     AuthModule,

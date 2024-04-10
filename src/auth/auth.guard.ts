@@ -15,7 +15,7 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
-    console.log("Authorization pending...");
+   // console.log("Authorization pending...");
     
     if (!token) {
       console.log("No token")

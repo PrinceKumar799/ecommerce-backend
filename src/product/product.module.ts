@@ -22,7 +22,7 @@ import { CacheModule } from '@nestjs/cache-manager';
   providers: [UserService,AuthService],
   exports:[UserService]
  */
-@Module({
+@Module({ 
   imports:[TypeOrmModule.forFeature([Product,Review,Cart,Wishlist]),CartModule,ReviewModule],
   controllers: [ProductController],
   providers: [ProductService,ReviewService,CartService],
